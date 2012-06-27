@@ -17,7 +17,7 @@
 
 
 exports.isObject = (obj) ->
-  obj?.constructor == Object
+  Object::toString.call(obj).slice(8, -1).toLowerCase() == 'object'
 
 exports.isString = (obj) ->
   typeof obj == 'string'
@@ -35,7 +35,7 @@ exports.isBoolean = (obj) ->
 
 exports.isDate = (obj) ->
   obj?.constructor == Date
- 
+
  if not Function.prototype.name
     Object.defineProperty Function.prototype, 'name', get: ->
         source = @toString()
