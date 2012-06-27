@@ -64,8 +64,8 @@ exports.ODataProvider =
         fromOData: (table, filters, ordering, skip, take, selections) ->
             query = new Query(table)
             query.where filters if filters
-            query.skip skip if skip
-            query.take take if take
+            query.skip skip if skip || skip == 0
+            query.take take if take || take == 0
             (query.select field.trim()) for field in (selections?.split(',') ? [])
             for [field, direction] in (item.trim().split ' ' for item in (ordering?.split(',') ? []))
                 if direction?.toUpperCase() != 'DESC'
