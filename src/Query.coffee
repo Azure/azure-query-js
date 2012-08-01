@@ -43,7 +43,14 @@ exports.Query =
             _ordering = { }
             _skip = null
             _take = null
-            
+
+            ###
+            # Keep a version flag that's updated on each mutation so we can
+            # track whether changes have been made.  This is to enable caching
+            # of compiled queries without reevaluating unless necessary.
+            ###
+            _version = 0
+
             ### Get the individual components of the query ###
             @getComponents = ->
                 filters: _filters
@@ -54,12 +61,14 @@ exports.Query =
                 take: _take
                 table: _table
                 context: _context
+                version: _version
 
             ###
             # Set the individual components of the query (this is primarily
             # meant to be used for rehydrating a query).
             ###
             @setComponents = (components) ->
+                _version++
                 _filters = components?.filters ? null
                 _selections = components?.selections ? []
                 _projection = components?.projection ? null
@@ -78,6 +87,7 @@ exports.Query =
             # that not all providers support literals).
             ###
             @where = (constraint, args...) ->
+                _version++
                 ###
                 # Translate the constraint from its high level form into a
                 # QueryExpression tree that can be manipulated by a query
@@ -120,6 +130,7 @@ exports.Query =
             # minimal number of fields required.
             ###
             @select = (projectionOrParameter, parameters...) ->
+                _version++
                 if _.isString projectionOrParameter
                     ### Add all the literal string parameters ###
                     _selections.push(projectionOrParameter)
@@ -136,6 +147,7 @@ exports.Query =
                 this
 
             @orderBy = (parameters...) ->
+                _version++
                 for param in parameters
                     if not (_.isString param)
                         throw "Expected string parameters, not #{param}"
@@ -143,6 +155,7 @@ exports.Query =
                 this
 
             @orderByDescending = (parameters...) ->
+                _version++
                 for param in parameters
                     if not (_.isString param)
                         throw "Expected string parameters, not #{param}"
@@ -150,12 +163,14 @@ exports.Query =
                 this
 
             @skip = (count) ->
+                _version++
                 if not (_.isNumber count)
                     throw "Expected a number, not #{count}"
                 _skip = count
                 this
 
             @take = (count) ->
+                _version++
                 if not (_.isNumber count)
                     throw "Expected a number, not #{count}"
                 _take = count

@@ -174,7 +174,7 @@ test 'Where Literal', ->
 test 'Where Object', ->
     # An empty object does nothing
     q = new Query('customers').where({ })
-    assert.equal q.getComponents().filters, null    
+    assert.equal q.getComponents().filters, null
 
     # Add a single equality check
     q = new Query('customers').where(name : 'Bob')
@@ -226,3 +226,22 @@ test 'Complete example', ->
         .take(10);
     odata = q.toOData()
     assert.equal odata, "/customers?$filter=((name eq 'Bob') and (age ge 18))&$orderby=age,name desc&$top=10&$select=name,age"
+
+test 'Versioning', ->
+    q = new Query('test')
+    assert.equal q.getComponents().version, 0
+    q.where({age: 12})
+    assert.equal q.getComponents().version, 1
+    assert.equal q.getComponents().version, 1
+    q.select('age')
+    assert.equal q.getComponents().version, 2
+    q.orderBy('age')
+    assert.equal q.getComponents().version, 3
+    q.orderByDescending('age')
+    assert.equal q.getComponents().version, 4
+    q.skip(2)
+    assert.equal q.getComponents().version, 5
+    q.take(3)
+    assert.equal q.getComponents().version, 6
+    q.setComponents(null)
+    assert.equal q.getComponents().version, 7
