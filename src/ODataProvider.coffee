@@ -1,18 +1,18 @@
 ###
-# 
+#
 # Copyright (c) Microsoft Corporation
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #   http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 ###
 
 _ = require './Utilities'
@@ -92,20 +92,12 @@ class ODataFilterQueryVisitor extends Q.QueryExpressionVisitor
             ###
             # Dates are expected in the format
             #   "datetime'yyyy-mm-ddThh:mm[:ss[.fffffff]]'"
+            # which JSON.stringify gives us by default
             ###
-            pad = (value, length, ch) ->
-                text = value.toString()
-                while text.length < length
-                    text = ch + text
-                text
-            year = pad(value.getFullYear(), 4, '0')
-            month = pad(value.getMonth() + 1, 2, '0')
-            day = pad(value.getDate(), 2, '0')
-            hours = pad(value.getHours(), 2, '0')
-            minutes = pad(value.getMinutes(), 2, '0')
-            seconds = pad(value.getSeconds(), 2, '0')
-            ms = pad(value.getMilliseconds(), 3, '0')
-            "datetime'#{year}-#{month}-#{day}T#{hours}:#{minutes}:#{seconds}.#{ms}'"
+            text = JSON.stringify value
+            if text.length > 2
+                text = text[1..text.length-2]
+            "datetime'#{text}'"
         else if not value
             "null"
         else
@@ -126,7 +118,7 @@ class ODataFilterQueryVisitor extends Q.QueryExpressionVisitor
             throw "Unsupported operator #{node.operator}"
 
     BinaryExpression: (node) ->
-        mapping = 
+        mapping =
             And: 'and'
             Or: 'or'
             Add: 'add'
@@ -158,7 +150,7 @@ class ODataFilterQueryVisitor extends Q.QueryExpressionVisitor
             Concat: 'concat'
             Day: 'day'
             Month: 'month'
-            Year: 'year' 
+            Year: 'year'
             Floor: 'floor'
             Ceiling: 'ceiling'
             Round: 'round'
