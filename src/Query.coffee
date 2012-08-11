@@ -43,6 +43,7 @@ exports.Query =
             _ordering = { }
             _skip = null
             _take = null
+            _includeTotalCount = false
 
             ###
             # Keep a version flag that's updated on each mutation so we can
@@ -61,6 +62,7 @@ exports.Query =
                 take: _take
                 table: _table
                 context: _context
+                includeTotalCount: _includeTotalCount
                 version: _version
 
             ###
@@ -75,6 +77,7 @@ exports.Query =
                 _ordering = components?.ordering ? { }
                 _skip = components?.skip ? null
                 _take = components?.take ? null
+                _includeTotalCount = components?.includeTotalCount ? false
                 _table = components?.table ? null
                 _context = components?.context ? null
                 this
@@ -174,6 +177,16 @@ exports.Query =
                 if not (_.isNumber count)
                     throw "Expected a number, not #{count}"
                 _take = count
+                this
+
+            ###
+            # Indicate that the query should include the total count for all the
+            # records that would have been returned if the results hadn't been
+            # capped by the server.
+            ###
+            @includeTotalCount = () ->
+                _version++
+                _includeTotalCount = true
                 this
 
         ###

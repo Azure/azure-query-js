@@ -39,10 +39,12 @@ test 'Set Components', ->
     q.setComponents(
         skip: 10
         take: 5
-        table: 'users')
+        table: 'users'
+        includeTotalCount: true)
     assert.equal q.getComponents().skip, 10
     assert.equal q.getComponents().take, 5
     assert.equal q.getComponents().table, 'users'
+    assert.equal q.getComponents().includeTotalCount, true
 
 test 'Expressions are included', ->
     assert.notEqual Query.Expressions, null
@@ -115,6 +117,16 @@ test 'Skip', ->
     assert.equal q.getComponents().skip, 7
 
     assert.throws -> new Query('customers').skip('the line')
+
+test 'Include Total Count', ->
+    q = new Query('foo')
+    assert.equal q.getComponents().includeTotalCount, false
+
+    q.includeTotalCount()
+    assert.equal q.getComponents().includeTotalCount, true
+
+    q.includeTotalCount()
+    assert.equal q.getComponents().includeTotalCount, true
 
 test 'Select Simple', ->
     q = new Query('customers')
@@ -243,5 +255,7 @@ test 'Versioning', ->
     assert.equal q.getComponents().version, 5
     q.take(3)
     assert.equal q.getComponents().version, 6
-    q.setComponents(null)
+    q.includeTotalCount()
     assert.equal q.getComponents().version, 7
+    q.setComponents(null)
+    assert.equal q.getComponents().version, 8

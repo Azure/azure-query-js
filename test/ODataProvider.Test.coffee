@@ -287,13 +287,14 @@ translate "/paging?$top=10",
 translate "/paging?$skip=10&$top=20",
     new Query('paging').skip(10).take(20)
 
-translate "/combine?$filter=(price eq 10)&$orderby=title&$skip=10&$top=20&$select=price,title",
+translate "/combine?$filter=(price eq 10)&$orderby=title&$skip=10&$top=20&$select=price,title&$inlinecount=allpages",
     new Query('combine')
         .where(-> @price == 10)
         .orderBy('title')
         .select('price', 'title')
         .skip(10)
         .take(20)
+        .includeTotalCount()
 
 translate "/literal?$filter=id eq 12",
     new Query('literal').where("id eq 12")
@@ -313,15 +314,19 @@ translate "/literal?$filter='john'",
 translate "/literal?$filter='?",
     new Query('literal').where("'?")
 
+translate "/count?$inlinecount=allpages",
+    new Query('count').includeTotalCount()
+
 test 'fromOData', ->
-    q = Query.Providers.OData.fromOData 'table', null, null, null, null, null
+    q = Query.Providers.OData.fromOData 'table', null, null, null, null, null, false
     assert.equal q.getComponents().table, 'table'
 
-    q = Query.Providers.OData.fromOData 'checkins', 'id eq 12', undefined, undefined, 10, null
+    q = Query.Providers.OData.fromOData 'checkins', 'id eq 12', undefined, undefined, 10, null, false
     assert.equal q.getComponents().filters.type, 'LiteralExpression'
     assert.equal q.getComponents().take, 10
+    assert.equal q.getComponents().includeTotalCount, false
 
-    q = Query.Providers.OData.fromOData 'checkins', 'id eq 12', 'name,price, state asc   ,  foo desc', 5, 10, 'a,   b , c'
+    q = Query.Providers.OData.fromOData 'checkins', 'id eq 12', 'name,price, state asc   ,  foo desc', 5, 10, 'a,   b , c', true
     assert.equal q.getComponents().filters.type, 'LiteralExpression'
     assert.equal q.getComponents().ordering.name, true
     assert.equal q.getComponents().ordering.price, true
@@ -332,3 +337,4 @@ test 'fromOData', ->
     assert.equal q.getComponents().selections[0], 'a'
     assert.equal q.getComponents().selections[1], 'b'
     assert.equal q.getComponents().selections[2], 'c'
+    assert.equal q.getComponents().includeTotalCount, true
