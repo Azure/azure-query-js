@@ -29,7 +29,7 @@ exports.JavaScriptToQueryVisitor =
 
         ### Get the source code for a given node ###
         getSource: (node) ->
-            @context.source[node?.range?[0]..node?.range?[1]]
+            @context.source[node?.range?[0]..(node?.range?[1] - 1)]
         
         ### Throw an exception for an invalid node. ###
         invalid: (node) ->

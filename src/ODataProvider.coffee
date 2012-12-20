@@ -91,7 +91,7 @@ class ODataFilterQueryVisitor extends Q.QueryExpressionVisitor
         if (_.isNumber value) || (_.isBoolean value)
             value.toString()
         else if _.isString value
-            value = value.replace /'/g, "''"
+            value = encodeURIComponent(value.replace /'/g, "''")
             "'#{value}'"
         else if _.isDate value
             ###

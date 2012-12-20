@@ -52,7 +52,7 @@ exports.PartialEvaluator =
                     # Evaluate the source of the sub expression in the context
                     # of the environment
                     ###
-                    source = @context.source[node?.range?[0]..node?.range?[1]]
+                    source = @context.source[node?.range?[0]..(node?.range?[1] - 1)]
                     params = (key for key, value of @context.environment) ? []
                     values = ((JSON.stringify value) for key, value of @context.environment) ? []
                     thunk = "(function(#{params}) { return #{source}; })(#{values})"

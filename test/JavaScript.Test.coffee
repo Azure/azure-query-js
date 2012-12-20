@@ -32,7 +32,7 @@ test 'getExpression expression', ->
 
 test 'getExpression source', ->
     context = JavaScript.getExpression ((a) -> 2 + a), [1]
-    source = context.source[context.expression.range[0]..context.expression.range[1]]
+    source = context.source[context.expression.range[0]..(context.expression.range[1] - 1)]
     assert.equal source, '2 + a'
 
     context = JavaScript.getExpression ((a) -> monkey * a), [1]

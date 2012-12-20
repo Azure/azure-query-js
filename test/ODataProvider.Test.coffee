@@ -87,17 +87,20 @@ translate "/types?$filter=(author eq 'John')",
 translate "/types?$filter=(author eq 'John')",
     new Query('types').where(-> @author == "John")
 
-translate "/types?$filter=(author eq 'John Doe')",
+translate "/types?$filter=(author eq 'John%20Doe')",
     new Query('types').where(author: "John Doe")
 
-translate "/types?$filter=(author eq 'John Doe')",
+translate "/types?$filter=(author eq 'John%20Doe')",
     new Query('types').where(-> @author == "John Doe")
 
-translate "/types?$filter=(author eq 'escapes ''s')",
+translate "/types?$filter=(author eq 'escapes%20''s')",
     new Query('types').where(author: "escapes 's")
 
-translate "/types?$filter=(author eq 'escapes ''s')",
+translate "/types?$filter=(author eq 'escapes%20''s')",
     new Query('types').where(-> @author == "escapes 's")
+
+translate "/types?$filter=(title eq 'How%20to%20dial%20this%20%23%20%26%20such%20stuff%3F')",
+    new Query('types').where(-> @title == "How to dial this # & such stuff?")
 
 translate "/types?$filter=(author eq 'a''b''c')",
     new Query('types').where(author: "a'b'c")
@@ -117,10 +120,10 @@ translate "/types?$filter=(author eq '''''''')",
 translate "/types?$filter=(author eq '''''''')",
     new Query('types').where(-> @author == "'''")
 
-translate "/types?$filter=(author eq 'escapes \"s')",
+translate "/types?$filter=(author eq 'escapes%20%22s')",
     new Query('types').where(author: 'escapes "s')
 
-translate "/types?$filter=(author eq 'escapes \"s')",
+translate "/types?$filter=(author eq 'escapes%20%22s')",
     new Query('types').where(-> @author == 'escapes "s')
 
 translate "/types?$filter=(published eq datetime'2011-11-21T00:00:00.000Z')",
