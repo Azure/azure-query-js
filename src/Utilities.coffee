@@ -35,3 +35,33 @@ exports.isBoolean = (obj) ->
 
 exports.isDate = (obj) ->
   obj?.constructor == Date
+
+# Array.prototype.reduce shim for IE8 based on https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/Reduce
+if not Array.prototype.reduce?
+  Array.prototype.reduce = (accumulator, moreArgs...) ->
+    array = this
+    arrayLength = array.length
+    currentIndex = 0
+    currentValue = undefined
+
+    if not array?
+      throw new TypeError("Object is null or undefined")
+    if typeof accumulator != "function"
+      throw new TypeError("First argument is not callable")
+
+    if moreArgs.length == 0
+      if arrayLength == 0
+        throw new TypeError("Array length is 0 and no second argument")
+      else
+        # Start accumulating at the second element
+        currentValue = array[0]
+        currentIndex = 1
+    else
+      currentValue = moreArgs[0]
+
+    while currentIndex < arrayLength
+      if currentIndex of array
+        currentValue = accumulator.call undefined, currentValue, array[currentIndex], array
+      ++currentIndex
+
+    return currentValue
