@@ -35,13 +35,3 @@ exports.isBoolean = (obj) ->
 
 exports.isDate = (obj) ->
   obj?.constructor == Date
-
- if not Function.prototype.name
-    Object.defineProperty Function.prototype, 'name', get: ->
-        source = @toString()
-        prefix = 'function '
-        if (source[0..prefix.length - 1] == prefix)
-            index = source.indexOf '(', prefix.length
-            if index > prefix.length
-                return source[prefix.length..index - 1]
-        null
