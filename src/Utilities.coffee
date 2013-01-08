@@ -65,3 +65,26 @@ if not Array.prototype.reduce?
       ++currentIndex
 
     return currentValue
+
+# Array.prototype.map shim for IE8 based on https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/Map
+if not Array.prototype.map?
+  Array.prototype.map = (callback, thisArg) ->
+    if not this?
+      throw new TypeError("this is null or not defined")
+    if typeof callback != "function"
+      throw new TypeError(callback + " is not a function")
+
+    thisArg = if thisArg then thisArg else undefined
+    inputArray = Object(this)
+    len = inputArray.length >>> 0
+    outputArray = new Array(len)
+
+    for elem, index in inputArray when index of inputArray
+      outputArray[index] = callback.call thisArg, elem, index, inputArray
+
+    return outputArray
+
+# Array.isArray shim for IE8 based on https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/IsArray
+if not Array.isArray?
+  Array.isArray = (vArg) ->
+    return Object.prototype.toString.call(vArg) == "[object Array]"
