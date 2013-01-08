@@ -102,6 +102,11 @@ class ODataFilterQueryVisitor extends Q.QueryExpressionVisitor
             text = JSON.stringify value
             if text.length > 2
                 text = text[1..text.length-2]
+            # IE8's JSON.stringify omits decimal part from dates,
+            # so insert it manually if missing
+            text = text.replace /(T\d{2}:\d{2}:\d{2})Z$/, (all, time) ->
+                msec = String(value.getMilliseconds() + 1000).substring(1)
+                "#{time}.#{msec}Z"
             "datetime'#{text}'"
         else if not value
             "null"
