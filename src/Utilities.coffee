@@ -15,27 +15,6 @@
 #
 ###
 
-
-exports.isObject = (obj) ->
-  Object::toString.call(obj).slice(8, -1).toLowerCase() == 'object'
-
-exports.isString = (obj) ->
-  typeof obj == 'string'
-
-exports.isFunction = (obj) ->
-  typeof obj == 'function'
-
-exports.isArray = Array.isArray
-
-exports.isNumber = (obj) ->
-  typeof obj == 'number'
-
-exports.isBoolean = (obj) ->
-  typeof obj == 'boolean'
-
-exports.isDate = (obj) ->
-  obj?.constructor == Date
-
 # Array.prototype.reduce shim for IE8 based on https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/Reduce
 if not Array.prototype.reduce?
   Array.prototype.reduce = (accumulator, moreArgs...) ->
@@ -88,3 +67,24 @@ if not Array.prototype.map?
 if not Array.isArray?
   Array.isArray = (vArg) ->
     return Object.prototype.toString.call(vArg) == "[object Array]"
+
+
+exports.isObject = (obj) ->
+  Object::toString.call(obj).slice(8, -1).toLowerCase() == 'object'
+
+exports.isString = (obj) ->
+  typeof obj == 'string'
+
+exports.isFunction = (obj) ->
+  typeof obj == 'function'
+
+exports.isArray = Array.isArray
+
+exports.isNumber = (obj) ->
+  typeof obj == 'number'
+
+exports.isBoolean = (obj) ->
+  typeof obj == 'boolean'
+
+exports.isDate = (obj) ->
+  obj?.constructor == Date
