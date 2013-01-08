@@ -34,7 +34,7 @@ exports.Node = class Node
     # Initializes a new instance of the Node class and sets its type tag.
     ###
     constructor: ->
-        @type = @constructor.name
+        @type = _.functionName @constructor
 
 
 ###

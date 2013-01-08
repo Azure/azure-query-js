@@ -88,3 +88,16 @@ exports.isBoolean = (obj) ->
 
 exports.isDate = (obj) ->
   obj?.constructor == Date
+
+exports.functionName = (fn) ->
+  # For IE8 compatibility, this is now a regular function instead of a property
+  if typeof Function.prototype.name == 'function'
+    Function.prototype.name.call fn
+  else
+    source = fn.toString()
+    prefix = 'function '
+    if (source[0..prefix.length - 1] == prefix)
+        index = source.indexOf '(', prefix.length
+        if index > prefix.length
+            return source[prefix.length..index - 1]
+    null
