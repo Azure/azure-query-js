@@ -133,7 +133,7 @@ exports.IndependenceNominator =
             # base cases above, then it's independence is determined by checking
             # all of its values and aggregating their independence
             ###
-            if not (hasOwnProperty.call(node, '__independent'))
+            if not (Object.prototype.hasOwnProperty.call(node, '__independent'))
                 independence = true
                 isIndependent = (node) ->
                     if _.isObject node then value.__independent ? false else true

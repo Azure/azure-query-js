@@ -3,7 +3,7 @@
   "author": "Microsoft Corporation",
   "version": "0.0.1",
   "description": "Windows Azure library for querying remote data sources.",
-  "tags": ["query", "azure"]
+  "tags": ["query", "azure"],
   "keywords": ["query", "azure"],
   "main": "./lib/Query.js",
   "engines": { "node": ">= 0.6.15"},
@@ -23,5 +23,5 @@
   ,
   "bugs" : {
     "url": "http://github.com/WindowsAzure/queryjs/issues"
-  },
+  }
 }

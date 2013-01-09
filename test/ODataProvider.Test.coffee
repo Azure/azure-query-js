@@ -126,8 +126,8 @@ translate "/types?$filter=(author eq 'escapes%20%22s')",
 translate "/types?$filter=(author eq 'escapes%20%22s')",
     new Query('types').where(-> @author == 'escapes "s')
 
-translate "/types?$filter=(published eq datetime'2011-11-21T00:00:00.000Z')",
-    new Query('types').where(-> @published == new Date(Date.UTC 2011, 10, 21))
+translate "/types?$filter=(published eq datetime'2011-11-21T05:16:21.010Z')",
+    new Query('types').where(-> @published == new Date(Date.UTC 2011, 10, 21, 5, 16, 21, 10))
 
 translate "/filtering?$filter=(price ge 12)",
     new Query('filtering').where(-> @price >= 12)
