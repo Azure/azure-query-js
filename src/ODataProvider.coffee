@@ -25,7 +25,7 @@ exports.ODataProvider =
         # Convert a query into an OData URI.
         ###
         toQuery: (query) ->
-            odata = @toOData query
+            odata = @toOData query, true
             url = "/#{odata.table}"
             s = '?'
             if odata.filters
@@ -50,12 +50,14 @@ exports.ODataProvider =
         ###
         # Translate the query components into OData strings
         ###
-        toOData: (query) ->
+        toOData: (query, encodeForUri) ->
+            if not encodeForUri?
+                encodeForUri = false;
             components = query?.getComponents() ? { }
             ordering = ((if asc then name else "#{name} desc") for name, asc of components?.ordering)
             odata =
                 table: components?.table
-                filters: ODataFilterQueryVisitor.convert components.filters
+                filters: ODataFilterQueryVisitor.convert components.filters, encodeForUri
                 ordering: ordering?.toString()
                 skip: components?.skip
                 take: components?.take
@@ -83,15 +85,20 @@ exports.ODataProvider =
 # Visitor that converts query expression trees into OData filter statements.
 ###
 class ODataFilterQueryVisitor extends Q.QueryExpressionVisitor
-    @convert: (filters) ->
-        visitor = new ODataFilterQueryVisitor
+
+    constructor: (@encodeForUri) ->
+
+    @convert: (filters, encodeForUri) ->
+        visitor = new ODataFilterQueryVisitor encodeForUri
         (visitor.visit(filters) if filters) ? null
 
     toOData: (value) ->
         if (_.isNumber value) || (_.isBoolean value)
             value.toString()
         else if _.isString value
-            value = encodeURIComponent(value.replace /'/g, "''")
+            value = value.replace /'/g, "''"
+            if (@encodeForUri? && @encodeForUri is true)
+                value = encodeURIComponent(value);
             "'#{value}'"
         else if _.isDate value
             ###
