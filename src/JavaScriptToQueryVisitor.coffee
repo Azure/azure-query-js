@@ -179,8 +179,12 @@ exports.JavaScriptToQueryVisitor =
                     ###
                     # Translate methods dangling off an instance
                     ###
-                    if node.callee.type == 'MemberExpression' && node.callee.object?.type == 'MemberExpression' && node.callee.object.object?.type == 'ThisExpression' && node.callee.object?.property?.name
-                        member = new Q.MemberExpression node.callee.object?.property?.name
+                    if node.callee.type == 'MemberExpression' && node.callee.object?.__hasThisExp == true
+                        if node?.callee?.object?.type == 'CallExpression'
+                            member = @visit(node.callee.object)
+                        else
+                            member = new Q.MemberExpression node.callee.object?.property?.name
+
                         method = node.callee?.property?.name
                         if method == 'toUpperCase'
                             new Q.InvocationExpression Q.Methods.ToUpperCase, [member]

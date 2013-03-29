@@ -77,16 +77,19 @@ exports.IndependenceNominator =
         Literal: (node) ->
             super node
             node.__independent = true
+            node.__hasThisExp = false          
             node
 
         ThisExpression: (node) ->
             super node
             node.__independent = false
+            node.__hasThisExp = true
             node
 
         Identifier: (node) ->
             super node
             node.__independent = true
+            node.__hasThisExp = false
             node
 
         MemberExpression: (node) ->
@@ -95,9 +98,17 @@ exports.IndependenceNominator =
             # Undo independence of identifiers when they're members of this.* or
             # this.member.* (the latter allows for member functions)
             ###
-            if (node.object?.type == 'ThisExpression') || (node.object?.type == 'MemberExpression' && node.object.object?.type == 'ThisExpression')
+            node.__hasThisExp = node.object?.__hasThisExp
+            if(node.__hasThisExp)
                 node.__independent = false
                 node?.property.__independent = false
+
+            node
+
+        CallExpression: (node) ->
+            super node
+            node.__hasThisExp = node.callee.__hasThisExp
+
             node
 
         ObjectExpression: (node) ->
