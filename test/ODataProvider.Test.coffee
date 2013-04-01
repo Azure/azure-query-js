@@ -251,11 +251,20 @@ translate "/filtering?$filter=(indexof(state,'w') eq 0)",
 translate "/filtering?$filter=(year(birthday) eq 2000)",
     new Query('filtering').where(-> @birthday.getFullYear() == 2000)
 
+translate "/filtering?$filter=(year(birthday) eq 2000)",
+    new Query('filtering').where(-> @birthday.getUTCFullYear() == 2000)
+
 translate "/filtering?$filter=((month(birthday) sub 1) eq 10)",
     new Query('filtering').where(-> @birthday.getMonth() == 10)
 
+translate "/filtering?$filter=((month(birthday) sub 1) eq 10)",
+    new Query('filtering').where(-> @birthday.getUTCMonth() == 10)
+
 translate "/filtering?$filter=(day(birthday) eq 21)",
     new Query('filtering').where(-> @birthday.getDate() == 21)
+
+translate "/filtering?$filter=(day(birthday) eq 21)",
+    new Query('filtering').where(-> @birthday.getUTCDate() == 21)
 
 translate "/filtering?$filter=(concat(name,'x') eq 'x')",
     new Query('filtering').where(-> @name.concat('x') == 'x')
