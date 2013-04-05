@@ -248,6 +248,9 @@ translate "/filtering?$filter=(trim(state) eq 'wa')",
 translate "/filtering?$filter=(indexof(state,'w') eq 0)",
     new Query('filtering').where(-> @state.indexOf('w') == 0)
 
+translate "/filtering?$filter=((year(birthday) sub 1900) eq 100)",
+    new Query('filtering').where(-> @birthday.getYear() == 100)
+
 translate "/filtering?$filter=(year(birthday) eq 2000)",
     new Query('filtering').where(-> @birthday.getFullYear() == 2000)
 

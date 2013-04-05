@@ -202,6 +202,11 @@ exports.JavaScriptToQueryVisitor =
                             new Q.InvocationExpression Q.Methods.Replace, (getTwoArgs member, 'replace')
                         else if method == 'getFullYear' || method == 'getUTCFullYear'
                             new Q.InvocationExpression Q.Methods.Year, [member]
+                        else if method == 'getYear'
+                            new Q.BinaryExpression(
+                                Q.BinaryOperators.Subtract,
+                                new Q.InvocationExpression(Q.Methods.Year, [member]),
+                                new Q.ConstantExpression(1900))
                         else if method == 'getMonth' || method == 'getUTCMonth'
                             ### getMonth is 0 indexed in JavaScript ###
                             new Q.BinaryExpression(
