@@ -299,6 +299,9 @@ translate "/paging?$skip=10",
 translate "/paging?$top=10",
     new Query('paging').take(10)
 
+translate "/paging?$top=0",
+    new Query('paging').take(0)
+
 translate "/paging?$skip=10&$top=20",
     new Query('paging').skip(10).take(20)
 
