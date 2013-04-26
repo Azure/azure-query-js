@@ -87,7 +87,7 @@ exports.isBoolean = (obj) ->
   typeof obj == 'boolean'
 
 exports.isDate = (obj) ->
-  obj?.constructor == Date
+  Object::toString.call(obj).slice(8, -1).toLowerCase() == 'date'
 
 exports.functionName = (fn) ->
   # For IE8 compatibility, this is now a regular function instead of a property
