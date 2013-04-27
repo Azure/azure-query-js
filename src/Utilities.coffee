@@ -15,6 +15,9 @@
 #
 ###
 
+classOf = (obj) -> 
+  Object::toString.call(obj).slice(8, -1).toLowerCase()
+
 # Array.prototype.reduce shim for IE8 based on https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/Reduce
 if not Array.prototype.reduce?
   Array.prototype.reduce = (accumulator, moreArgs...) ->
@@ -87,7 +90,7 @@ exports.isBoolean = (obj) ->
   typeof obj == 'boolean'
 
 exports.isDate = (obj) ->
-  Object::toString.call(obj).slice(8, -1).toLowerCase() == 'date'
+  classOf(obj) == 'date'
 
 exports.functionName = (fn) ->
   # For IE8 compatibility, this is now a regular function instead of a property
