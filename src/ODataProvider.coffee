@@ -37,7 +37,7 @@ exports.ODataProvider =
             if odata.skip
                 url += "#{s}$skip=#{odata.skip}"
                 s = '&'
-            if odata.take
+            if odata.take || odata.take == 0
                 url += "#{s}$top=#{odata.take}"
                 s = '&'
             if odata.selections
