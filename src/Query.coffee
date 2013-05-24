@@ -181,8 +181,8 @@ exports.Query =
 
             ###
             # Indicate that the query should include the total count for all the
-            # records that would have been returned ignoring any take paging/
-            # limit clause specified by the client or server.
+            # records that would have been returned ignoring any take paging
+            # limit clause specified by client or server.
             ###
             @includeTotalCount = () ->
                 _version++

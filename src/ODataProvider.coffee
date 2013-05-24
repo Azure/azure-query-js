@@ -25,7 +25,7 @@ exports.ODataProvider =
         # Convert a query into an OData URI.
         ###
         toQuery: (query) ->
-            odata = @toOData query
+            odata = @toOData query, true
             url = "/#{odata.table}"
             s = '?'
             if odata.filters
@@ -37,7 +37,7 @@ exports.ODataProvider =
             if odata.skip
                 url += "#{s}$skip=#{odata.skip}"
                 s = '&'
-            if odata.take
+            if odata.take || odata.take == 0
                 url += "#{s}$top=#{odata.take}"
                 s = '&'
             if odata.selections
@@ -50,12 +50,14 @@ exports.ODataProvider =
         ###
         # Translate the query components into OData strings
         ###
-        toOData: (query) ->
+        toOData: (query, encodeForUri) ->
+            if not encodeForUri?
+                encodeForUri = false;
             components = query?.getComponents() ? { }
             ordering = ((if asc then name else "#{name} desc") for name, asc of components?.ordering)
             odata =
                 table: components?.table
-                filters: ODataFilterQueryVisitor.convert components.filters
+                filters: ODataFilterQueryVisitor.convert components.filters, encodeForUri
                 ordering: ordering?.toString()
                 skip: components?.skip
                 take: components?.take
@@ -83,8 +85,11 @@ exports.ODataProvider =
 # Visitor that converts query expression trees into OData filter statements.
 ###
 class ODataFilterQueryVisitor extends Q.QueryExpressionVisitor
-    @convert: (filters) ->
-        visitor = new ODataFilterQueryVisitor
+
+    constructor: (@encodeForUri) ->
+
+    @convert: (filters, encodeForUri) ->
+        visitor = new ODataFilterQueryVisitor encodeForUri
         (visitor.visit(filters) if filters) ? null
 
     toOData: (value) ->
@@ -92,6 +97,8 @@ class ODataFilterQueryVisitor extends Q.QueryExpressionVisitor
             value.toString()
         else if _.isString value
             value = value.replace /'/g, "''"
+            if (@encodeForUri? && @encodeForUri is true)
+                value = encodeURIComponent(value);
             "'#{value}'"
         else if _.isDate value
             ###
@@ -102,6 +109,11 @@ class ODataFilterQueryVisitor extends Q.QueryExpressionVisitor
             text = JSON.stringify value
             if text.length > 2
                 text = text[1..text.length-2]
+            # IE8's JSON.stringify omits decimal part from dates,
+            # so insert it manually if missing
+            text = text.replace /(T\d{2}:\d{2}:\d{2})Z$/, (all, time) ->
+                msec = String(value.getMilliseconds() + 1000).substring(1)
+                "#{time}.#{msec}Z"
             "datetime'#{text}'"
         else if not value
             "null"

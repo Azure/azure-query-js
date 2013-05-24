@@ -52,7 +52,7 @@ exports.PartialEvaluator =
                     # Evaluate the source of the sub expression in the context
                     # of the environment
                     ###
-                    source = @context.source[node?.range?[0]..node?.range?[1]]
+                    source = @context.source[node?.range?[0]..(node?.range?[1] - 1)]
                     params = (key for key, value of @context.environment) ? []
                     values = ((JSON.stringify value) for key, value of @context.environment) ? []
                     thunk = "(function(#{params}) { return #{source}; })(#{values})"
@@ -77,16 +77,19 @@ exports.IndependenceNominator =
         Literal: (node) ->
             super node
             node.__independent = true
+            node.__hasThisExp = false          
             node
 
         ThisExpression: (node) ->
             super node
             node.__independent = false
+            node.__hasThisExp = true
             node
 
         Identifier: (node) ->
             super node
             node.__independent = true
+            node.__hasThisExp = false
             node
 
         MemberExpression: (node) ->
@@ -95,9 +98,17 @@ exports.IndependenceNominator =
             # Undo independence of identifiers when they're members of this.* or
             # this.member.* (the latter allows for member functions)
             ###
-            if (node.object?.type == 'ThisExpression') || (node.object?.type == 'MemberExpression' && node.object.object?.type == 'ThisExpression')
+            node.__hasThisExp = node.object?.__hasThisExp
+            if(node.__hasThisExp)
                 node.__independent = false
                 node?.property.__independent = false
+
+            node
+
+        CallExpression: (node) ->
+            super node
+            node.__hasThisExp = node.callee.__hasThisExp
+
             node
 
         ObjectExpression: (node) ->
@@ -133,7 +144,7 @@ exports.IndependenceNominator =
             # base cases above, then it's independence is determined by checking
             # all of its values and aggregating their independence
             ###
-            if not (hasOwnProperty.call(node, '__independent'))
+            if not (Object.prototype.hasOwnProperty.call(node, '__independent'))
                 independence = true
                 isIndependent = (node) ->
                     if _.isObject node then value.__independent ? false else true
