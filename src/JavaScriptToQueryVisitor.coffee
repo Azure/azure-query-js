@@ -29,7 +29,7 @@ exports.JavaScriptToQueryVisitor =
 
         ### Get the source code for a given node ###
         getSource: (node) ->
-            @context.source[node?.range?[0]..node?.range?[1]]
+            @context.source[node?.range?[0]..(node?.range?[1] - 1)]
         
         ### Throw an exception for an invalid node. ###
         invalid: (node) ->
@@ -179,8 +179,12 @@ exports.JavaScriptToQueryVisitor =
                     ###
                     # Translate methods dangling off an instance
                     ###
-                    if node.callee.type == 'MemberExpression' && node.callee.object?.type == 'MemberExpression' && node.callee.object.object?.type == 'ThisExpression' && node.callee.object?.property?.name
-                        member = new Q.MemberExpression node.callee.object?.property?.name
+                    if node.callee.type == 'MemberExpression' && node.callee.object?.__hasThisExp == true
+                        if node?.callee?.object?.type == 'CallExpression'
+                            member = @visit(node.callee.object)
+                        else
+                            member = new Q.MemberExpression node.callee.object?.property?.name
+
                         method = node.callee?.property?.name
                         if method == 'toUpperCase'
                             new Q.InvocationExpression Q.Methods.ToUpperCase, [member]
@@ -196,17 +200,21 @@ exports.JavaScriptToQueryVisitor =
                             new Q.InvocationExpression Q.Methods.Substring, (getTwoArgs member, 'substring')
                         else if method == 'replace'
                             new Q.InvocationExpression Q.Methods.Replace, (getTwoArgs member, 'replace')
-                        else if method == 'getFullYear'
+                        else if method == 'getFullYear' || method == 'getUTCFullYear'
                             new Q.InvocationExpression Q.Methods.Year, [member]
-                        else if method == 'getMonth'
+                        else if method == 'getYear'
+                            new Q.BinaryExpression(
+                                Q.BinaryOperators.Subtract,
+                                new Q.InvocationExpression(Q.Methods.Year, [member]),
+                                new Q.ConstantExpression(1900))
+                        else if method == 'getMonth' || method == 'getUTCMonth'
                             ### getMonth is 0 indexed in JavaScript ###
                             new Q.BinaryExpression(
                                 Q.BinaryOperators.Subtract, 
                                 new Q.InvocationExpression(Q.Methods.Month, [member]),
                                 new Q.ConstantExpression(1))
-                        else if method == 'getDate'
-                            new Q.InvocationExpression Q.Methods.Day, [member]
-                        
+                        else if method == 'getDate' || method == 'getUTCDate'
+                            new Q.InvocationExpression Q.Methods.Day, [member]                        
                         
                         
             expr ? (super node)

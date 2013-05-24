@@ -87,17 +87,20 @@ translate "/types?$filter=(author eq 'John')",
 translate "/types?$filter=(author eq 'John')",
     new Query('types').where(-> @author == "John")
 
-translate "/types?$filter=(author eq 'John Doe')",
+translate "/types?$filter=(author eq 'John%20Doe')",
     new Query('types').where(author: "John Doe")
 
-translate "/types?$filter=(author eq 'John Doe')",
+translate "/types?$filter=(author eq 'John%20Doe')",
     new Query('types').where(-> @author == "John Doe")
 
-translate "/types?$filter=(author eq 'escapes ''s')",
+translate "/types?$filter=(author eq 'escapes%20''s')",
     new Query('types').where(author: "escapes 's")
 
-translate "/types?$filter=(author eq 'escapes ''s')",
+translate "/types?$filter=(author eq 'escapes%20''s')",
     new Query('types').where(-> @author == "escapes 's")
+
+translate "/types?$filter=(title eq 'How%20to%20dial%20this%20%23%20%26%20such%20stuff%3F')",
+    new Query('types').where(-> @title == "How to dial this # & such stuff?")
 
 translate "/types?$filter=(author eq 'a''b''c')",
     new Query('types').where(author: "a'b'c")
@@ -117,14 +120,14 @@ translate "/types?$filter=(author eq '''''''')",
 translate "/types?$filter=(author eq '''''''')",
     new Query('types').where(-> @author == "'''")
 
-translate "/types?$filter=(author eq 'escapes \"s')",
+translate "/types?$filter=(author eq 'escapes%20%22s')",
     new Query('types').where(author: 'escapes "s')
 
-translate "/types?$filter=(author eq 'escapes \"s')",
+translate "/types?$filter=(author eq 'escapes%20%22s')",
     new Query('types').where(-> @author == 'escapes "s')
 
-translate "/types?$filter=(published eq datetime'2011-11-21T00:00:00.000Z')",
-    new Query('types').where(-> @published == new Date(Date.UTC 2011, 10, 21))
+translate "/types?$filter=(published eq datetime'2011-11-21T05:16:21.010Z')",
+    new Query('types').where(-> @published == new Date(Date.UTC 2011, 10, 21, 5, 16, 21, 10))
 
 translate "/filtering?$filter=(price ge 12)",
     new Query('filtering').where(-> @price >= 12)
@@ -245,14 +248,26 @@ translate "/filtering?$filter=(trim(state) eq 'wa')",
 translate "/filtering?$filter=(indexof(state,'w') eq 0)",
     new Query('filtering').where(-> @state.indexOf('w') == 0)
 
+translate "/filtering?$filter=((year(birthday) sub 1900) eq 100)",
+    new Query('filtering').where(-> @birthday.getYear() == 100)
+
 translate "/filtering?$filter=(year(birthday) eq 2000)",
     new Query('filtering').where(-> @birthday.getFullYear() == 2000)
+
+translate "/filtering?$filter=(year(birthday) eq 2000)",
+    new Query('filtering').where(-> @birthday.getUTCFullYear() == 2000)
 
 translate "/filtering?$filter=((month(birthday) sub 1) eq 10)",
     new Query('filtering').where(-> @birthday.getMonth() == 10)
 
+translate "/filtering?$filter=((month(birthday) sub 1) eq 10)",
+    new Query('filtering').where(-> @birthday.getUTCMonth() == 10)
+
 translate "/filtering?$filter=(day(birthday) eq 21)",
     new Query('filtering').where(-> @birthday.getDate() == 21)
+
+translate "/filtering?$filter=(day(birthday) eq 21)",
+    new Query('filtering').where(-> @birthday.getUTCDate() == 21)
 
 translate "/filtering?$filter=(concat(name,'x') eq 'x')",
     new Query('filtering').where(-> @name.concat('x') == 'x')
@@ -283,6 +298,9 @@ translate "/paging?$skip=10",
 
 translate "/paging?$top=10",
     new Query('paging').take(10)
+
+translate "/paging?$top=0",
+    new Query('paging').take(0)
 
 translate "/paging?$skip=10&$top=20",
     new Query('paging').skip(10).take(20)
