@@ -185,7 +185,7 @@ exports.JavaScriptToQueryVisitor =
                             new Q.InvocationExpression Q.Methods.IndexOf, [member, getSingleArg 'indexOf']
                         else if method == 'concat'
                             new Q.InvocationExpression Q.Methods.Concat, [member, getSingleArg 'concat']
-                        else if method == 'substring'
+                        else if method == 'substring' || method == 'substr'
                             new Q.InvocationExpression Q.Methods.Substring, (getTwoArgs member, 'substring')
                         else if method == 'replace'
                             new Q.InvocationExpression Q.Methods.Replace, (getTwoArgs member, 'replace')
