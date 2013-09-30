@@ -278,6 +278,9 @@ translate "/filtering?$filter=(replace(name,'x','y') eq 'y')",
 translate "/filtering?$filter=(substring(name,0,1) eq 'x')",
     new Query('filtering').where(-> @name.substring(0,1) == 'x')
 
+translate "/filtering?$filter=(substring(name,0,1) eq 'x')",
+    new Query('filtering').where(-> @name.substr(0,1) == 'x')
+
 translate "/ordering?$orderby=price",
     new Query('ordering').orderBy('price')
 
