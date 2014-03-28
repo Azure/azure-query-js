@@ -119,7 +119,7 @@ test 'Skip', ->
     assert.throws -> new Query('customers').skip('the line')
 
 test 'Include Total Count', ->
-    q = new Query('foo')
+    q = new Query('count')
     assert.equal q.getComponents().includeTotalCount, false
 
     q.includeTotalCount()
