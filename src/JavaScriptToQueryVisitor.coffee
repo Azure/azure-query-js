@@ -108,8 +108,8 @@ exports.JavaScriptToQueryVisitor =
             (@translateBinary node, mapping) ?
                 if node.operator == 'in' && node.right?.type == 'Literal' && _.isArray(node.right?.value)
                     ###
-                    # Transform the 'foo in [x, y, z]' operator into a series of
-                    # comparisons like foo == x || foo == y || foo == z.
+                    # Transform the 'var in [x, y, z]' operator into a series of
+                    # comparisons like var == x || var == y || var == z.
                     ###
                     if node.right.value.length > 0
                         left = @visit(node.left)

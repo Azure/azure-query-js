@@ -347,12 +347,12 @@ test 'fromOData', ->
     assert.equal q.getComponents().take, 10
     assert.equal q.getComponents().includeTotalCount, false
 
-    q = Query.Providers.OData.fromOData 'checkins', 'id eq 12', 'name,price, state asc   ,  foo desc', 5, 10, 'a,   b , c', true
+    q = Query.Providers.OData.fromOData 'checkins', 'id eq 12', 'name,price, state asc   ,  count desc', 5, 10, 'a,   b , c', true
     assert.equal q.getComponents().filters.type, 'LiteralExpression'
     assert.equal q.getComponents().ordering.name, true
     assert.equal q.getComponents().ordering.price, true
     assert.equal q.getComponents().ordering.state, true
-    assert.equal q.getComponents().ordering.foo, false
+    assert.equal q.getComponents().ordering.count, false
     assert.equal q.getComponents().skip, 5
     assert.equal q.getComponents().take, 10
     assert.equal q.getComponents().selections[0], 'a'

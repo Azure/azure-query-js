@@ -32,7 +32,7 @@ test 'Simple Independence', ->
 
     assertIndependence true, new JS.Literal 'text'
     assertIndependence true, new JS.Literal 42
-    assertIndependence true, new JS.Identifier 'foo'
+    assertIndependence true, new JS.Identifier 'count'
     assertIndependence false, new JS.ThisExpression
     assertIndependence false, new JS.MemberExpression(
         new JS.ThisExpression,
@@ -48,7 +48,7 @@ test 'Complex Independence', ->
         assert.equal expectIndependent, context.expression.__independent
 
     assertIndependence true, (-> 1 + 1), []
-    assertIndependence true, (-> 1 + foo), []
+    assertIndependence true, (-> 1 + count), []
     assertIndependence true, ((a) -> a), [1]
     assertIndependence false, (-> @age == 21), []
     assertIndependence false, (-> 1 + @_id), []
@@ -70,9 +70,9 @@ test 'Simple Partial Evaluation', ->
     assert.equal expr.type, 'Literal'
     assert.equal expr.value, 4
 
-    expr = simplify (-> @foo), []
+    expr = simplify (-> @count), []
     assert.equal expr.type, 'MemberExpression'
-    assert.equal expr.property.name, 'foo'
+    assert.equal expr.property.name, 'count'
 
 test 'Complex partial evaluation', ->
     expr = simplify (-> @month == new Date(1983, 10, 21).getMonth() + 1), []
