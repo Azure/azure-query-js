@@ -317,26 +317,60 @@ translate "/combine?$filter=(price eq 10)&$orderby=title&$skip=10&$top=20&$selec
         .take(20)
         .includeTotalCount()
 
-translate "/literal?$filter=id eq 12",
+translate "/literal?$filter=(id eq 12)",
     new Query('literal').where("id eq 12")
 
-translate "/literal?$filter=id eq 13",
+translate "/literal?$filter=(id eq 13)",
     new Query('literal').where("id eq ?", 13)
 
-translate "/literal?$filter=author eq 'john'",
+translate "/literal?$filter=(author eq 'john')",
     new Query('literal').where("author eq ?", 'john')
 
-translate "/literal?$filter=(title eq '?') and (price eq 5)",
+translate "/literal?$filter=((title eq '?') and (price eq 5))",
     new Query('literal').where("(title eq '?') and (price eq ?)", 5)
 
-translate "/literal?$filter='john'",
+translate "/literal?$filter=((true or true) and (id eq 1))",
+    new Query('literal').where("true or true").where("id eq 1")
+
+translate "/literal?$filter=('john')",
     new Query('literal').where("?", 'john')
 
-translate "/literal?$filter='?",
+translate "/literal?$filter=('?)",
     new Query('literal').where("'?")
+
+translate "/literal",
+    new Query('literal').where("")
+
+translate "/literal?$filter= ",
+    new Query('literal').where(" ")
+
+translate "/literal?$filter=('(test' eq 'test)')",
+    new Query('literal').where("'(test' eq 'test)'")
 
 translate "/count?$inlinecount=allpages",
     new Query('count').includeTotalCount()
+
+test 'toOData literals', ->
+    q = new Query('literal').where("1 eq 1 ) or ( 1 eq 1")
+    assert.throws (-> q.toOData()), /Unbalanced parentheses/
+
+    q = new Query('literal').where("(1 eq 1) ) or ( (1 eq 1)")
+    assert.throws (-> q.toOData()), /Unbalanced parentheses/
+
+    q = new Query('literal').where("(")
+    assert.throws (-> q.toOData()), /Unbalanced parentheses/
+
+    q = new Query('literal').where(")")
+    assert.throws (-> q.toOData()), /Unbalanced parentheses/
+
+    q = new Query('literal').where(")()(")
+    assert.throws (-> q.toOData()), /Unbalanced parentheses/
+
+    q = new Query('literal').where("(()")
+    assert.throws (-> q.toOData()), /Unbalanced parentheses/
+
+    q = new Query('literal').where("())")
+    assert.throws (-> q.toOData()), /Unbalanced parentheses/
 
 test 'fromOData', ->
     q = Query.Providers.OData.fromOData 'table', null, null, null, null, null, false

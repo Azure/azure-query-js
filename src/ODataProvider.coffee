@@ -168,9 +168,12 @@ class ODataFilterQueryVisitor extends Q.QueryExpressionVisitor
 
     LiteralExpression: (node) ->
         literal = ''
+        parenBalance = 0
         inString = false
         for ch in node.queryString
-            if inString
+            if parenBalance < 0
+                break                
+            else if inString
                 literal += ch
                 inString = ch != "'"
             else if ch == '?'
@@ -180,8 +183,19 @@ class ODataFilterQueryVisitor extends Q.QueryExpressionVisitor
             else if ch == "'"
                 literal += ch
                 inString = true
+            else if ch == '('
+                parenBalance += 1;
+                literal += ch
+            else if ch == ')'
+                parenBalance -= 1;
+                literal += ch
             else
                 literal += ch
         if node.args && node.args.length > 0
             throw "Too many arguments for #{node.queryString}"
-        literal
+        if parenBalance != 0
+            throw "Unbalanced parentheses in #{node.queryString}"
+        if literal.trim().length > 0
+            "(#{literal})"
+        else
+            literal
