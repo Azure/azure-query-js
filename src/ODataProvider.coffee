@@ -43,7 +43,7 @@ exports.ODataProvider =
             if not encodeForUri?
                 encodeForUri = false;
             components = query?.getComponents() ? { }
-            ordering = ((if asc then name else "#{name} desc") for name, asc of components?.ordering)
+            ordering = ((if order.ascending then order.name else "#{order.name} desc") for order in components?.ordering)
             odata =
                 table: components?.table
                 filters: ODataFilterQueryVisitor.convert components.filters, encodeForUri

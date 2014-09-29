@@ -62,13 +62,20 @@ test 'Query Providers', ->
 
 test 'OrderBy', ->
     q = new Query('customers').orderBy('birthdate')
-    assert.equal q.getComponents().ordering.birthdate, true
+    ordering = q.getComponents().ordering
+    assert.equal ordering.length, 1
+    assert.equal ordering[0].name, 'birthdate'
+    assert.equal ordering[0].ascending, true
 
     q = new Query('customers').orderBy('a', 'b').orderByDescending('c')
     ordering = q.getComponents().ordering
-    assert.equal ordering.a, true
-    assert.equal ordering.b, true
-    assert.equal ordering.c, false
+    assert.equal ordering.length, 3
+    assert.equal ordering[0].name, 'a'
+    assert.equal ordering[0].ascending, true
+    assert.equal ordering[1].name, 'b'
+    assert.equal ordering[1].ascending, true
+    assert.equal ordering[2].name, 'c'
+    assert.equal ordering[2].ascending, false
 
     q = new Query('customers').orderBy()
     assert.ok q.getComponents().ordering
@@ -77,13 +84,20 @@ test 'OrderBy', ->
 
 test 'OrderByDescending', ->
     q = new Query('customers').orderByDescending('birthdate')
-    assert.equal q.getComponents().ordering.birthdate, false
+    ordering = q.getComponents().ordering
+    assert.equal ordering.length, 1
+    assert.equal ordering[0].name, 'birthdate'
+    assert.equal ordering[0].ascending, false
 
     q = new Query('customers').orderByDescending('a', 'b').orderBy('c')
     ordering = q.getComponents().ordering
-    assert.equal ordering.a, false
-    assert.equal ordering.b, false
-    assert.equal ordering.c, true
+    assert.equal ordering.length, 3
+    assert.equal ordering[0].name, 'a'
+    assert.equal ordering[0].ascending, false
+    assert.equal ordering[1].name, 'b'
+    assert.equal ordering[1].ascending, false
+    assert.equal ordering[2].name, 'c'
+    assert.equal ordering[2].ascending, true
 
     q = new Query('customers').orderByDescending()
     assert.ok q.getComponents().ordering
@@ -92,7 +106,10 @@ test 'OrderByDescending', ->
 
 test 'Ordering Stomp', ->
     q = new Query('customers').orderBy('birthdate').orderByDescending('birthdate')
-    assert.equal q.getComponents().ordering.birthdate, false
+    ordering = q.getComponents().ordering
+    assert.equal ordering.length, 1
+    assert.equal ordering[0].name, 'birthdate'
+    assert.equal ordering[0].ascending, false
 
 test 'Take', ->
     q = new Query('customers')

@@ -29,7 +29,7 @@ exports.Query =
             _filters = null
             _projection = null
             _selections = []
-            _ordering = { }
+            _ordering = []
             _skip = null
             _take = null
             _includeTotalCount = false
@@ -63,7 +63,7 @@ exports.Query =
                 _filters = components?.filters ? null
                 _selections = components?.selections ? []
                 _projection = components?.projection ? null
-                _ordering = components?.ordering ? { }
+                _ordering = components?.ordering ? []
                 _skip = components?.skip ? null
                 _take = components?.take ? null
                 _includeTotalCount = components?.includeTotalCount ? false
@@ -143,7 +143,13 @@ exports.Query =
                 for param in parameters
                     if not (_.isString param)
                         throw "Expected string parameters, not #{param}"
-                    _ordering[param] = true
+                    replacement = false
+                    for order in _ordering
+                        if order.name == param
+                            replacement = true
+                            order.ascending = true
+                    if not replacement
+                        _ordering.push({ name: param, ascending: true })
                 this
 
             @orderByDescending = (parameters...) ->
@@ -151,7 +157,13 @@ exports.Query =
                 for param in parameters
                     if not (_.isString param)
                         throw "Expected string parameters, not #{param}"
-                    _ordering[param] = false
+                    replacement = false
+                    for order in _ordering
+                        if order.name == param
+                            replacement = true
+                            order.ascending = false
+                    if not replacement
+                        _ordering.push({ name: param, ascending: false })
                 this
 
             @skip = (count) ->
