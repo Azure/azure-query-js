@@ -383,15 +383,19 @@ test 'fromOData', ->
 
     q = Query.Providers.OData.fromOData 'checkins', 'id eq 12', 'name,price, state asc   ,  count desc', 5, 10, 'a,   b , c', true
     assert.equal q.getComponents().filters.type, 'LiteralExpression'
-    assert.equal q.getComponents().ordering.length, 4
-    assert.equal q.getComponents().ordering[0].name, 'name'
-    assert.equal q.getComponents().ordering[0].ascending, true
-    assert.equal q.getComponents().ordering[1].name, 'price'
-    assert.equal q.getComponents().ordering[1].ascending, true
-    assert.equal q.getComponents().ordering[2].name, 'state'
-    assert.equal q.getComponents().ordering[2].ascending, true
-    assert.equal q.getComponents().ordering[3].name, 'count'
-    assert.equal q.getComponents().ordering[3].ascending, false
+    assert.equal q.getComponents().ordering.name, true
+    assert.equal q.getComponents().ordering.price, true
+    assert.equal q.getComponents().ordering.state, true
+    assert.equal q.getComponents().ordering.count, false
+    assert.equal q.getComponents().orderClauses.length, 4
+    assert.equal q.getComponents().orderClauses[0].name, 'name'
+    assert.equal q.getComponents().orderClauses[0].ascending, true
+    assert.equal q.getComponents().orderClauses[1].name, 'price'
+    assert.equal q.getComponents().orderClauses[1].ascending, true
+    assert.equal q.getComponents().orderClauses[2].name, 'state'
+    assert.equal q.getComponents().orderClauses[2].ascending, true
+    assert.equal q.getComponents().orderClauses[3].name, 'count'
+    assert.equal q.getComponents().orderClauses[3].ascending, false
     assert.equal q.getComponents().skip, 5
     assert.equal q.getComponents().take, 10
     assert.equal q.getComponents().selections[0], 'a'
