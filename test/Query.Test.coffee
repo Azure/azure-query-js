@@ -46,6 +46,38 @@ test 'Set Components', ->
     assert.equal q.getComponents().table, 'users'
     assert.equal q.getComponents().includeTotalCount, true
 
+test 'Set Components - orderClauses populated from ordering (backward compat)', ->
+    q = new Query('customers')
+    q.setComponents(
+        ordering: { name: true, age: false });
+    orderClauses = q.getComponents().orderClauses
+    assert.equal orderClauses.length, 2
+    assert.equal orderClauses[0].name, 'name'
+    assert.equal orderClauses[0].ascending, true
+    assert.equal orderClauses[1].name, 'age'
+    assert.equal orderClauses[1].ascending, false
+
+    assert.equal q.getComponents().ordering.name, true
+    assert.equal q.getComponents().ordering.age, false
+
+test 'Set Components - ordering populated from orderClauses (backward compat)', ->
+    q = new Query('customers')
+    q.setComponents(
+        ordering: { name: true, age: false }
+        orderClauses: [ { name: 'product', ascending: false }, { name: 'price', ascending: true } ]);
+
+    orderClauses = q.getComponents().orderClauses
+    assert.equal orderClauses.length, 2
+    assert.equal orderClauses[0].name, 'product'
+    assert.equal orderClauses[0].ascending, false
+    assert.equal orderClauses[1].name, 'price'
+    assert.equal orderClauses[1].ascending, true
+
+    assert.equal q.getComponents().ordering.name, null
+    assert.equal q.getComponents().ordering.age, null
+    assert.equal q.getComponents().ordering.product, false
+    assert.equal q.getComponents().ordering.price, true
+
 test 'Expressions are included', ->
     assert.notEqual Query.Expressions, null
     assert.ok new Query.Expressions.ConstantExpression(42)
@@ -269,6 +301,20 @@ test 'Complete example', ->
         .take(10);
     odata = q.toOData()
     assert.equal odata, "/customers?$filter=((name eq 'Bob') and (age ge 18))&$orderby=age,name desc&$top=10&$select=name,age"
+
+test 'Complete example with setComponents (backward compat with ordering)', ->
+    minAge = 18
+    q = new Query('customers')
+    q.setComponents(
+        take: 10
+        skip: 5
+        table: 'users'
+        includeTotalCount: true
+        selections: ['name', 'age']
+        ordering: { name: true, age: false }
+        filters: "(name eq 'Bob')")
+    odata = q.toOData()
+    assert.equal odata, "/users?$filter=(name eq 'Bob')&$orderby=name,age desc&$skip=5&$top=10&$select=name,age&$inlinecount=allpages"
 
 test 'Versioning', ->
     q = new Query('test')

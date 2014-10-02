@@ -29,6 +29,8 @@ exports.Query =
             _filters = null
             _projection = null
             _selections = []
+            # Ordering is maintained for backward compatibility,
+            #  but it's not used for generating the OData query
             _ordering = {}
             _orderClauses = []
             _skip = null
@@ -65,13 +67,20 @@ exports.Query =
                 _filters = components?.filters ? null
                 _selections = components?.selections ? []
                 _projection = components?.projection ? null
-                _ordering = components?.ordering ? {}
-                _orderClauses = components?.orderClauses ? []
                 _skip = components?.skip ? null
                 _take = components?.take ? null
                 _includeTotalCount = components?.includeTotalCount ? false
                 _table = components?.table ? null
                 _context = components?.context ? null
+                if components?.orderClauses
+                    _orderClauses = components?.orderClauses ? []
+                    _ordering = {}
+                    _ordering[name] = ascending for { name, ascending } in _orderClauses
+                else
+                    _ordering = components?.ordering ? {}
+                    _orderClauses = []
+                    for property of _ordering
+                        _orderClauses.push({ name: property, ascending: !!_ordering[property] })
                 this
 
 
