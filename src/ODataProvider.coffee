@@ -20,8 +20,8 @@ exports.ODataProvider =
             if odata.filters
                 url += "#{s}$filter=#{odata.filters}"
                 s = '&'
-            if odata.ordering
-                url += "#{s}$orderby=#{odata.ordering}"
+            if odata.orderClauses
+                url += "#{s}$orderby=#{odata.orderClauses}"
                 s = '&'
             if odata.skip
                 url += "#{s}$skip=#{odata.skip}"
@@ -44,10 +44,12 @@ exports.ODataProvider =
                 encodeForUri = false;
             components = query?.getComponents() ? { }
             ordering = ((if asc then name else "#{name} desc") for name, asc of components?.ordering)
+            orderClauses = ((if order.ascending then order.name else "#{order.name} desc") for order in components?.orderClauses)
             odata =
                 table: components?.table
                 filters: ODataFilterQueryVisitor.convert components.filters, encodeForUri
                 ordering: ordering?.toString()
+                orderClauses: orderClauses?.toString()
                 skip: components?.skip
                 take: components?.take
                 selections: components?.selections?.toString()
