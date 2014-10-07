@@ -29,7 +29,10 @@ exports.Query =
             _filters = null
             _projection = null
             _selections = []
-            _ordering = { }
+            # Ordering is maintained for backward compatibility,
+            #  but it's not used for generating the OData query
+            _ordering = {}
+            _orderClauses = []
             _skip = null
             _take = null
             _includeTotalCount = false
@@ -47,6 +50,7 @@ exports.Query =
                 selections: _selections
                 projection: _projection
                 ordering: _ordering
+                orderClauses: _orderClauses
                 skip: _skip
                 take: _take
                 table: _table
@@ -63,12 +67,20 @@ exports.Query =
                 _filters = components?.filters ? null
                 _selections = components?.selections ? []
                 _projection = components?.projection ? null
-                _ordering = components?.ordering ? { }
                 _skip = components?.skip ? null
                 _take = components?.take ? null
                 _includeTotalCount = components?.includeTotalCount ? false
                 _table = components?.table ? null
                 _context = components?.context ? null
+                if components?.orderClauses
+                    _orderClauses = components?.orderClauses ? []
+                    _ordering = {}
+                    _ordering[name] = ascending for { name, ascending } in _orderClauses
+                else
+                    _ordering = components?.ordering ? {}
+                    _orderClauses = []
+                    for property of _ordering
+                        _orderClauses.push({ name: property, ascending: !!_ordering[property] })
                 this
 
 
@@ -144,6 +156,13 @@ exports.Query =
                     if not (_.isString param)
                         throw "Expected string parameters, not #{param}"
                     _ordering[param] = true
+                    replacement = false
+                    for order in _orderClauses
+                        if order.name == param
+                            replacement = true
+                            order.ascending = true
+                    if not replacement
+                        _orderClauses.push({ name: param, ascending: true })
                 this
 
             @orderByDescending = (parameters...) ->
@@ -152,6 +171,13 @@ exports.Query =
                     if not (_.isString param)
                         throw "Expected string parameters, not #{param}"
                     _ordering[param] = false
+                    replacement = false
+                    for order in _orderClauses
+                        if order.name == param
+                            replacement = true
+                            order.ascending = false
+                    if not replacement
+                        _orderClauses.push({ name: param, ascending: false })
                 this
 
             @skip = (count) ->
