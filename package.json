@@ -1,5 +1,5 @@
 {
-  "name": "azure-query-js",
+  "name": "query.js",
   "author": "Microsoft Corporation",
   "version": "0.0.2",
   "description": "Windows Azure library for querying remote data sources.",
