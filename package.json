@@ -9,7 +9,7 @@
   "engines": { "node": ">= 0.6.15"},
   "license": "Apache-2.0",
   "dependencies": {
-    "esprima": "^1.9.2"
+    "esprima": "^2.7.2"
   },
   "devDependencies": {
     "mocha": "^2.2.4",
