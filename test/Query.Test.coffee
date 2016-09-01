@@ -191,6 +191,16 @@ test 'Include Total Count', ->
     q.includeTotalCount()
     assert.equal q.getComponents().includeTotalCount, true
 
+test 'Include Deleted', ->
+    q = new Query('count')
+    assert.equal q.getComponents().includeDeleted, false
+
+    q.includeDeleted()
+    assert.equal q.getComponents().includeDeleted, true
+
+    q.includeDeleted()
+    assert.equal q.getComponents().includeDeleted, true
+
 test 'Select Simple', ->
     q = new Query('customers')
     assert.equal q.getComponents().selections.length, 0

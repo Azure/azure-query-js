@@ -36,6 +36,7 @@ exports.Query =
             _skip = null
             _take = null
             _includeTotalCount = false
+            _includeDeleted = false
 
             ###
             # Keep a version flag that's updated on each mutation so we can
@@ -56,6 +57,7 @@ exports.Query =
                 table: _table
                 context: _context
                 includeTotalCount: _includeTotalCount
+                includeDeleted: _includeDeleted
                 version: _version
 
             ###
@@ -70,6 +72,7 @@ exports.Query =
                 _skip = components?.skip ? null
                 _take = components?.take ? null
                 _includeTotalCount = components?.includeTotalCount ? false
+                _includeDeleted = components?.includeDeleted ? false
                 _table = components?.table ? null
                 _context = components?.context ? null
                 if components?.orderClauses
@@ -202,6 +205,14 @@ exports.Query =
             @includeTotalCount = () ->
                 _version++
                 _includeTotalCount = true
+                this
+
+            ###
+            # Indicate that the query should include soft deleted records.
+            ###
+            @includeDeleted = () ->
+                _version++
+                _includeDeleted = true
                 this
 
         ###

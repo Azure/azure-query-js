@@ -350,6 +350,9 @@ translate "/literal?$filter=('(test' eq 'test)')",
 translate "/count?$inlinecount=allpages",
     new Query('count').includeTotalCount()
 
+translate "/deleted?__includeDeleted=true",
+    new Query('deleted').includeDeleted()
+
 test 'toOData literals', ->
     q = new Query('literal').where("1 eq 1 ) or ( 1 eq 1")
     assert.throws (-> q.toOData()), /Unbalanced parentheses/
@@ -376,10 +379,11 @@ test 'fromOData', ->
     q = Query.Providers.OData.fromOData 'table', null, null, null, null, null, false
     assert.equal q.getComponents().table, 'table'
 
-    q = Query.Providers.OData.fromOData 'checkins', 'id eq 12', undefined, undefined, 10, null, false
+    q = Query.Providers.OData.fromOData 'checkins', 'id eq 12', undefined, undefined, 10, null, false, true
     assert.equal q.getComponents().filters.type, 'LiteralExpression'
     assert.equal q.getComponents().take, 10
     assert.equal q.getComponents().includeTotalCount, false
+    assert.equal q.getComponents().includeDeleted, true
 
     q = Query.Providers.OData.fromOData 'checkins', 'id eq 12', 'name,price, state asc   ,  count desc', 5, 10, 'a,   b , c', true
     assert.equal q.getComponents().filters.type, 'LiteralExpression'
