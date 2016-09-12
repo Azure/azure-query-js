@@ -7,6 +7,9 @@
   "keywords": ["query", "azure"],
   "main": "./lib/Query.js",
   "license": "Apache-2.0",
+  "scripts": {
+    "build": "coffee -c -o lib src"
+  },
   "dependencies": {
     "esprima": "^2.7.2"
   },
