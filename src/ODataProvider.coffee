@@ -34,6 +34,10 @@ exports.ODataProvider =
                 s = '&'
             if odata.includeTotalCount
                 url += "#{s}$inlinecount=allpages"
+
+            # includeDeleted is not standard odata, it is used by azure-mobile-apps
+            if odata.includeDeleted
+                url += "#{s}__includeDeleted=true"
             url
 
         ###
@@ -54,16 +58,18 @@ exports.ODataProvider =
                 take: components?.take
                 selections: components?.selections?.toString()
                 includeTotalCount: components?.includeTotalCount
+                includeDeleted: components?.includeDeleted
 
         ###
         # Convert OData components into a query object
         ###
-        fromOData: (table, filters, ordering, skip, take, selections, includeTotalCount) ->
+        fromOData: (table, filters, ordering, skip, take, selections, includeTotalCount, includeDeleted) ->
             query = new Query(table)
             query.where filters if filters
             query.skip skip if skip || skip == 0
             query.take take if take || take == 0
             query.includeTotalCount() if includeTotalCount
+            query.includeDeleted() if includeDeleted
             (query.select field.trim()) for field in (selections?.split(',') ? [])
             for [field, direction] in (item.trim().split ' ' for item in (ordering?.split(',') ? []))
                 if direction?.toUpperCase() != 'DESC'
